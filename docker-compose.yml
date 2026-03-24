@@ -1,0 +1,44 @@
+services:
+  db:
+    image: ankane/pgvector:v0.5.1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=proai
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build: 
+      context: ./apps/api
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/proai
+      - REDIS_URL=redis://redis:6379/0
+      - GOOGLE_API_KEY=AIzaSyAuxNjviRcvyfzhFdrfGlVTerpy_5GUSKU
+      - NVIDIA_API_KEY=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
+      - KIMI_API_KEY=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
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  web:
+    build:
+      context: ./apps/web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
