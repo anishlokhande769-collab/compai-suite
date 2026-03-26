@@ -9,10 +9,4 @@
       "source": "/(.*)",
       "destination": "/apps/web/$1"
     }
-  ],
-  "functions": {
-    "api/index.py": {
-      "runtime": "@vercel/python"
-    }
-  }
-}
+  ]
